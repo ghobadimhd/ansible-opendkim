@@ -1,0 +1,19 @@
+---
+- name: create domain key directory
+  file:
+    path: "{{ opendkim_keypath }}/{{ item.name }}/"
+    state: directory
+    owner: opendkim
+    group: opendkim
+
+
+- name: create keys
+  command: "opendkim-genkey -s {{ item.selector |  default(opendkim_default_key_selector) | default('default') }}"
+  args:
+    chdir: "{{ opendkim_keypath }}/{{ item.name }}/"
+    creates: "{{ opendkim_keypath }}/{{ item.name }}/{{ item.selector |  default(opendkim_default_key_selector) | default('default') }}.private"
+
+- name: fetch keys
+  fetch:
+    src: "{{ opendkim_keypath }}/{{ item.name }}/{{ item.selector |  default(opendkim_default_key_selector) | default('default') }}.txt"
+    dest: ./opendkim-keys/

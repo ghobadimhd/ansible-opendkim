@@ -1,0 +1,16 @@
+---
+# defaults file for ghobadimhd.opendkim
+
+opendkim_enable: true
+opendkim_config_file: /etc/opendkim.conf
+opendkim_pid_file: /var/run/opendkim/opendkim_pid
+opendkim_socket: inet:12301@localhost
+opendkim_user: opendkim
+opendkim_keypath: /etc/opendkim/keys
+opendkim_keyTable: /etc/opendkim/keytable
+opendkim_signingTable: /etc/opendkim/signingtable
+opendkim_fetch_path: ./opendkim_keys
+opendkim_default_key_selector: default
+opendkim_domains:
+  - name: "{{ ansible_fqdn }}"
+    selector: "default"

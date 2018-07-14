@@ -1,0 +1,76 @@
+---
+# tasks file for ghobadimhd.opendkim
+
+- name: install opendkim
+  apt:
+    name: 
+      - opendkim
+      - opendkim-tools
+    state: present
+
+- name:
+  user:
+    name: opendkim
+    state: present
+    home: /var/run/opendkim
+    shell: /bin/false
+
+- name: create opendkim directory
+  file:
+    path: /etc/opendkim/
+    state: directory
+    owner: opendkim
+    group: root
+
+- name: create key directory
+  file:
+    path: "{{ opendkim_keypath }}"
+    state: directory
+    owner: opendkim
+    group: root
+
+- name: config opendkim
+  template:
+    src: "opendkim.conf"
+    dest: "{{ opendkim_config_file }}"
+    owner: opendkim
+    group: opendkim
+  notify:
+    - restart opendkim
+    # - restart postfixs
+
+- name: config opendkim socket
+  template:
+    src: "default_opendkim"
+    dest: "/etc/default/opendkim"
+    owner: opendkim
+    group: opendkim
+  notify:
+    - restart opendkim
+    # - restart postfix
+
+- name: add domain to keytable
+  lineinfile:
+    dest: "{{ opendkim_keyTable }}"
+    line: "{{ item.name }}  {{ item.name }}:{{ item.selector |  default(opendkim_default_key_selector) | default('default') }}:{{ opendkim_keypath }}/{{ item.name }}/{{ item.selector |  default(opendkim_default_key_selector) | default('default') }}.private"
+    owner: opendkim
+    group: opendkim
+    create: yes
+  with_items: "{{opendkim_domains}}"
+
+- name: add domain to signingtable
+  lineinfile:
+    dest: "{{ opendkim_signingTable }}"
+    line: "{{ item.name }}  {{ item.name }}"
+    owner: opendkim
+    group: opendkim
+    create: yes
+  with_items: "{{opendkim_domains}}"
+
+- name: generating opendkim keys
+  include_tasks: opendkim-genkeys.yml
+  with_items: "{{ opendkim_domains }}"
+
+
+
+
