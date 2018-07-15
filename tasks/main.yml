@@ -10,9 +10,9 @@
 
 - name:
   user:
-    name: opendkim
+    name: "{{ opendkim_user }}"
     state: present
-    home: /var/run/opendkim
+    home: "/var/run/{{ opendkim_user }}"
     shell: /bin/false
 
 - name: create opendkim directory
