@@ -1,12 +1,22 @@
 ---
 # tasks file for ghobadimhd.opendkim
 
-- name: install opendkim
-  apt:
-    name: 
-      - opendkim
-      - opendkim-tools
+
+- name: Load distribuion specific variabales
+  include_vars: "vars/{{ ansible_os_family }}.yml"
+
+- name: Add repository
+  yum_repository:
+    name: epel
     state: present
+    description: EPEL YUM repo
+    mirrorlist: https://admin.fedoraproject.org/mirrormanager/mirrors/EPEL/$releasever/$basearch
+  when: ansible_os_family == 'RedHat'
+
+- name: install opendkim
+  package:
+    state: present
+    name: "{{ packages }}"
 
 - name:
   user:
@@ -49,23 +59,20 @@
     - restart opendkim
     # - restart postfix
 
-- name: add domain to keytable
-  lineinfile:
+- name: Create key table file
+  template:
+    src: keytable.j2
     dest: "{{ opendkim_keyTable }}"
-    line: "{{ item.name }}  {{ item.name }}:{{ item.selector |  default(opendkim_default_key_selector) | default('default') }}:{{ opendkim_keypath }}/{{ item.name }}/{{ item.selector |  default(opendkim_default_key_selector) | default('default') }}.private"
     owner: opendkim
     group: opendkim
-    create: yes
-  with_items: "{{opendkim_domains}}"
 
-- name: add domain to signingtable
-  lineinfile:
+- name: Create signing table file
+  template:
+    src: signingtable.j2
     dest: "{{ opendkim_signingTable }}"
-    line: "{{ item.name }}  {{ item.name }}"
     owner: opendkim
     group: opendkim
-    create: yes
-  with_items: "{{opendkim_domains}}"
+
 
 - name: generating opendkim keys
   include_tasks: opendkim-genkeys.yml

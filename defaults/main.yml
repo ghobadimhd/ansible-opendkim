@@ -3,7 +3,7 @@
 
 opendkim_enable: true
 opendkim_config_file: /etc/opendkim.conf
-opendkim_pid_file: /var/run/opendkim/opendkim_pid
+opendkim_pid_file: /var/run/opendkim/opendkim.pid
 opendkim_socket: inet:12301@localhost
 opendkim_user: opendkim
 opendkim_keypath: /etc/opendkim/keys

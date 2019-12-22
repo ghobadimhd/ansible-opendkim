@@ -1,0 +1,4 @@
+---
+packages:
+  - opendkim
+  - opendkim-tools

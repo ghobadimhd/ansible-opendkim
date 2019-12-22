@@ -8,7 +8,7 @@
 
 
 - name: create keys
-  command: "opendkim-genkey -s {{ item.selector |  default(opendkim_default_key_selector) | default('default') }}"
+  command: "opendkim-genkey -s {{ item.selector |  default(opendkim_default_key_selector) | default('default') }} -d {{ item.name }}"
   args:
     chdir: "{{ opendkim_keypath }}/{{ item.name }}/"
     creates: "{{ opendkim_keypath }}/{{ item.name }}/{{ item.selector |  default(opendkim_default_key_selector) | default('default') }}.private"
@@ -17,3 +17,11 @@
   fetch:
     src: "{{ opendkim_keypath }}/{{ item.name }}/{{ item.selector |  default(opendkim_default_key_selector) | default('default') }}.txt"
     dest: ./opendkim-keys/
+
+- name: set key files permissions
+  file:
+    path: "{{ opendkim_keypath }}/{{ item.name }}/"
+    state: directory
+    owner: opendkim
+    group: opendkim
+    recurse: yes

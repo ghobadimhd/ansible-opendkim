@@ -1,0 +1,3 @@
+{% for domain in opendkim_domains %}
+{{ domain.selector }}.{{ domain.name }}	{{ domain.name }}:{{ domain.selector |  default(opendkim_default_key_selector) | default('default') }}:{{ opendkim_keypath }}/{{ domain.name }}/{{ domain.selector |  default(opendkim_default_key_selector) | default('default') }}.private
+{% endfor %}
