@@ -1,4 +1,4 @@
-Role Name
+Ansible OpenDKIM Role
 =========
 
 This is simple ansible role to configure opendkim on ubuntu xenial.
